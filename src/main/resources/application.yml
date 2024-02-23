@@ -14,6 +14,26 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  config:
+    import:
+      - "application_qa.yml"
+      - "application_prod.yml"
+  profiles:
+    active:
+      - "qa"
+
+build:
+  version: "3.0"
+
+accounts:
+  message: "Welcome to JainBank accounts related local APIs "
+  contactDetails:
+    name: "Nitansshu Jain - Developer"
+    email: "nitansshujain@gmail.com"
+  onCallSupport:
+    - (+91) 9721241204
+
+
 
 
 ###### To run in the browser at port 8080
