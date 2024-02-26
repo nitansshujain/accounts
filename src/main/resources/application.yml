@@ -21,6 +21,12 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8071/"  # We must use configserver here regardless of the name provided to application (configserver); optional is used when we want application to be started if case of issue as well.
 
+# Refresh the MS when any changes occur (actuator/refresh). Here I'm including all the endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 
 ###### To run in the browser at port 8080
