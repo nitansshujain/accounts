@@ -15,7 +15,7 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "accounts")
 @Getter
 @Setter
-public class AccountsContactInfoDto{
+public class AccountsContactInfoDto {
     String message;
     Map<String, String> contactDetails;
     List<String> onCallSupport;

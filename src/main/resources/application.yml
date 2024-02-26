@@ -20,6 +20,12 @@ spring:
     show-sql: true
   config:
     import: "optional:configserver:http://localhost:8071/"  # We must use configserver here regardless of the name provided to application (configserver); optional is used when we want application to be started if case of issue as well.
+  # Adding rabbitmq configuration
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
 
 # Refresh the MS when any changes occur (actuator/refresh). Here I'm including all the endpoints
 management:
