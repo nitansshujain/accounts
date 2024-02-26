@@ -1,6 +1,10 @@
 server:
   port: 8080
 spring:
+  application:
+    name: "accounts"
+  profiles:
+    active: "prod"
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
@@ -15,24 +19,7 @@ spring:
       ddl-auto: update
     show-sql: true
   config:
-    import:
-      - "application_qa.yml"
-      - "application_prod.yml"
-  profiles:
-    active:
-      - "qa"
-
-build:
-  version: "3.0"
-
-accounts:
-  message: "Welcome to JainBank accounts related local APIs "
-  contactDetails:
-    name: "Nitansshu Jain - Developer"
-    email: "nitansshujain@gmail.com"
-  onCallSupport:
-    - (+91) 9721241204
-
+    import: "optional:configserver:http://localhost:8071/"  # We must use configserver here regardless of the name provided to application (configserver); optional is used when we want application to be started if case of issue as well.
 
 
 
