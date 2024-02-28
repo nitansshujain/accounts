@@ -1,0 +1,46 @@
+Precedence Order (1 is max)
+1. Program Arguments (Command Line Arguments)
+--spring.profiles.active=prod --build.version=1.1
+
+2. VM Options (JVM Properties)
+-Dspring.profiles.active=prod -Dbuild.version=1.2
+
+3. Environment Variables
+SPRING_PROFILES_ACTIVE=prod;BUILD_VERSION=1.3
+
+4. Run RabbitMQ
+docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.13-management    # latest RabbitMQ 3.13
+
+5. Run MYSQL container via docker (By default mysql starts at 3306; --name accountsdb is the name of the db_container; -e is Environment; MYSQL_DATABASE is the dbname for MYSQL; mysql is the dockername)
+docker run -p 3306:3306 --name accountsdb -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=accountsdb -d mysql
+
+6. To run in the browser at port 8080
+http://localhost:8080/h2-console
+http://localhost:8080/swagger-ui/index.html
+
+7. Docker Commands
+Command to be executed in cmd inside the accounts folder to build the project inside the Docker file
+docker build . -t nitansshujain/accounts:s4
+Here . is the location (here the location is the current location), -t is the tag, nitansshujain is the username of dockerhub, accounts in the project name, s4 is the version
+
+docker images # to view all the images
+docker inspect image <image_id> # to view the description of the image
+
+docker run -d -p 8080:8080 <image_name>:<tag_name>  # To create a new container and run, -d is the detached mode, -p is the port, 8080 (second) is the port where docker container will start inside the Docker network, 8080 (first) telling the docker to expose the container to the outside of the Docker network at port 8080 (locally/cloud/VMs)
+docker run -d -p 8081:8080 <image_name>:<tag_name>  # To create a new container same as above, but make sure to change the port (first)
+
+docker start <image_id>   # To start the existing container
+docker stop <image_id>   # To stop the existing container
+
+docker ps     # list of running containers
+docker ps -a    # list of stopped containers
+
+mvn spring-boot:build-image     # To create image using buildpack, make sure to run from the correct terminal location, then create container through docker run command
+mvn compile jib:dockerBuild     # To create image using GoogleJib, make sure to run from the correct terminal location, then create container through docker run command
+
+docker image push docker.io/<image_name>:<tag>     # To push onto docker hub
+
+docker compose up -d  # creating the images, containers, networks and run those containers using the single command only
+docker compose down   # deleting the images, containers and networks
+docker compose stop   # stopping the containers only
+docker compose start   # starting the containers only
