@@ -84,6 +84,14 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+
     </dependencies>
 
     <dependencyManagement>
@@ -120,7 +128,8 @@
                 <version>3.4.0</version>
                 <configuration>
                     <to>
-                        <image>nitansshujain/${project.artifactId}:s4</image>
+                        <image>nitansshujain/${project.artifactId}:s6</image>
+<!--                        mvn compile jib:dockerBuild-->
                     </to>
                 </configuration>
             </plugin>
