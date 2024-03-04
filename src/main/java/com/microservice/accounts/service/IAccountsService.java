@@ -1,5 +1,6 @@
 package com.microservice.accounts.service;
 
+import com.microservice.accounts.dto.CustomerDetailsDto;
 import com.microservice.accounts.dto.CustomerDto;
 
 public interface IAccountsService {

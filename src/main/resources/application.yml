@@ -15,7 +15,6 @@ spring:
     init:
       mode: always # Always run the schema sql commands
 
-    defer-datasource-initialization: true
   config:
     import: "optional:configserver:http://localhost:8071/"  # We must use configserver here regardless of the name provided to application (configserver); optional is used when we want application to be started if case of issue as well.
 #  # Adding rabbitmq configuration
@@ -31,4 +30,30 @@ management:
     web:
       exposure:
         include: "*"
+  endpoint:   # Whenever MS is trying to shut down, it will deregister from the details from eureka server
+    shutdown:
+      enabled: true
+    info:
+      env:
+        enabled: true
+
+endpoints:
+  shutdown:
+    enabled: true
+
+eureka:
+  instance:
+#    hostname: localhost  # Not needed here, as this is not the eureka server, this is the client MS which will connect with the eureka server
+    preferIpAddress: true   # Accounts MS will register with my Eureka server by using the IP, so other MS can connect with this MS using the IP
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
+
+info:
+  app:
+    name: "accounts"
+    description: "Jain Bank Accounts Application"
+    version: "1.0.0"
 
