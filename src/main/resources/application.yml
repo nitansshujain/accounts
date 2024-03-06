@@ -30,11 +30,19 @@ management:
     web:
       exposure:
         include: "*"
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
   endpoint:   # Whenever MS is trying to shut down, it will deregister from the details from eureka server
     shutdown:
       enabled: true
     info:
       env:
+        enabled: true
+    health:
+      probes:
         enabled: true
 
 endpoints:
@@ -51,9 +59,15 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8070/eureka/
 
+# Show info of gateway server inside the eureka server (at the browser)
 info:
   app:
     name: "accounts"
     description: "Jain Bank Accounts Application"
     version: "1.0.0"
 
+logging:
+  level:
+    com:
+      microservice:
+        accounts: DEBUG

@@ -10,12 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -36,18 +33,17 @@ public class AccountsController {
 
     private final IAccountsService iAccountsService;
 
-    public AccountsController(IAccountsService iAccountsService) {
+    public AccountsController(IAccountsService iAccountsService, Environment environment, AccountsContactInfoDto accountsContactInfoDto) {
         this.iAccountsService = iAccountsService;
+        this.environment = environment;
+        this.accountsContactInfoDto = accountsContactInfoDto;
     }
 
     @Value("${build.version}")
     private String buildVersion;
 
-    @Autowired
-    private Environment environment; // Make sure to import from spring-core
-
-    @Autowired
-    private AccountsContactInfoDto accountsContactInfoDto;
+    private final Environment environment; // Make sure to import from spring-core
+    private final AccountsContactInfoDto accountsContactInfoDto;
 
 
     // This is used to provide the name, description ... for each operation to be performed by each HTTP methods
@@ -56,20 +52,19 @@ public class AccountsController {
             description = "REST API to create new Customer &  Account inside JainBank"
     )
     // This is used to provide the responses needed ...
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "HTTP Status CREATED"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content( //  "content" is used to get the ErrorResponse visible in the SwaggerUI. SB is telling that I am going to send the ErrorResponse by following the schema defined inside the ErrorResponseDTO.
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    }
+
+    @ApiResponse(
+            responseCode = "201",
+            description = "HTTP Status CREATED"
     )
+    @ApiResponse(
+            responseCode = "500",
+            description = "HTTP Status Internal Server Error",
+            content = @Content( //  "content" is used to get the ErrorResponse visible in the SwaggerUI. SB is telling that I am going to send the ErrorResponse by following the schema defined inside the ErrorResponseDTO.
+                    schema = @Schema(implementation = ErrorResponseDto.class)
+            )
+    )
+
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@RequestBody
                                                          @Valid
@@ -78,30 +73,28 @@ public class AccountsController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ResponseDto(AccountsConstants.STATUS_201,AccountsConstants.MESSAGE_201));
+                .body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201));
     }
 
     @Operation(
             summary = "Fetch Account Details REST API",
             description = "REST API to fetch Customer &  Account details based on a mobile number"
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    }
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
     )
+    @ApiResponse(
+            responseCode = "500",
+            description = "HTTP Status Internal Server Error",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDto.class)
+            )
+    )
+
     @GetMapping("/fetch")
     public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam // Since mobileNumber is @RequestParam (not @RequestBody DTO, we use @Pattern to verify
-                                                               @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+                                                               @Pattern(regexp = "(^$|\\d{10})", message = "Mobile number must be 10 digits")
                                                                String mobileNumber) {
         CustomerDto customerDto = iAccountsService.fetchAccount(mobileNumber);
         return ResponseEntity
@@ -113,23 +106,21 @@ public class AccountsController {
             summary = "Update Account Details REST API",
             description = "REST API to update Customer & Account details based on the account number"
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "417",
-                    description = "Expectation Failed"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @ApiResponse(
+            responseCode = "417",
+            description = "Expectation Failed"
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "HTTP Status Internal Server Error",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDto.class)
             )
-    }
     )
     @PutMapping("/update")
     public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody
@@ -151,27 +142,25 @@ public class AccountsController {
             summary = "Delete Account & Customer Details REST API",
             description = "REST API to delete Customer &  Account details based on a mobile number"
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "417",
-                    description = "Expectation Failed"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @ApiResponse(
+            responseCode = "417",
+            description = "Expectation Failed"
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "HTTP Status Internal Server Error",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDto.class)
             )
-    }
     )
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam // Since mobileNumber is @RequestParam (not @RequestBody DTO, we use @Pattern to verify
-                                                                @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+                                                                @Pattern(regexp = "(^$|\\d{10})", message = "Mobile number must be 10 digits")
                                                                 String mobileNumber) {
         boolean isDeleted = iAccountsService.deleteAccount(mobileNumber);
         if(isDeleted) {
@@ -190,19 +179,17 @@ public class AccountsController {
             summary = "Get Build information",
             description = "Get Build information that is deployed into accounts microservice"
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "HTTP Status Internal Server Error",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDto.class)
             )
-    }
     )
     @GetMapping("/build-info") // Method-1 using the @Value annotation
     public ResponseEntity<String> getBuildInfo() {
@@ -215,19 +202,17 @@ public class AccountsController {
             summary = "Get Java version",
             description = "Get Java versions details that is installed into accounts microservice"
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
+
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "HTTP Status Internal Server Error",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDto.class)
             )
-    }
     )
     @GetMapping("/java-version") // Method-2 using the Environment interface (from spring-core)
     public ResponseEntity<String> getJavaVersion() {
@@ -240,19 +225,16 @@ public class AccountsController {
             summary = "Get Contact Info",
             description = "Contact Info details that can be reached out in case of any issues"
     )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @ApiResponse(
+            responseCode = "500",
+            description = "HTTP Status Internal Server Error",
+            content = @Content(
+                    schema = @Schema(implementation = ErrorResponseDto.class)
             )
-    }
     )
     @GetMapping("/contact-info") // Method-3 using the @ConfigurationProperties annotation by making the DTO record inside the dto folder and enable this annotation in SpringApplication...
     public ResponseEntity<AccountsContactInfoDto> getContactInfo() {

@@ -48,4 +48,10 @@ docker compose start   # starting the containers only
 8. Localhost
 localhost:8070/eureka/apps # Eureka server - acting as the service discovery agent and our MSs are also communicating their instance details to the Eureka Service Registry by sending the heartbeat every 30s (by default) to know if the server is listening
 localhost:8080/actuator/shutdown # shutdown is not possible through browser as it's the GET request
-# To establish internal communication between MSs - Use Feign client library
+
+
+Notes:
+Sequence to run apps: configserver, eurekaserver, MSs, gatewayserver
+To establish internal communication between MSs - Use Feign client library
+Eureka implements service discovery and service registry. It is not capable of performing non-functional requirements or implementing cross-cutting concerns like security, request authentication, authorisation and validation, logging, monitoring, etc.
+Here, API Gateway/ Edge server is used.

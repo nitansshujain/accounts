@@ -25,6 +25,7 @@ public class AccountsServiceImpl implements IAccountsService {
     // since there is only once constructor (@AllArgsConstructor), we don't need to use @Autowire on the args (accountsRepository, customerRepository)
     private AccountsRepository accountsRepository;
     private CustomerRepository customerRepository;
+    private static final Random RANDOM = new Random();
 
     /**
      * @param customerDto - CustomerDto Object
@@ -54,7 +55,7 @@ public class AccountsServiceImpl implements IAccountsService {
         Accounts newAccount = new Accounts();
         newAccount.setCustomerId(customer.getCustomerId());
 
-        long randomAccNumber = 1000000000L + new Random().nextInt(900000000);
+        long randomAccNumber = 1000000000L + RANDOM.nextInt(900000000);
         newAccount.setAccountNumber(randomAccNumber);
 
         newAccount.setAccountType(AccountsConstants.SAVINGS);
@@ -73,7 +74,7 @@ public class AccountsServiceImpl implements IAccountsService {
     @Override
     public CustomerDto fetchAccount(String mobileNumber) {
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
-                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+                () -> new ResourceNotFoundException(AccountsConstants.CUSTOMER_MESSAGE, AccountsConstants.MOBILE_MESSAGE, mobileNumber)
         );
         Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
                 () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
@@ -100,7 +101,7 @@ public class AccountsServiceImpl implements IAccountsService {
 
             Long customerId = accounts.getCustomerId();
             Customer customer = customerRepository.findById(customerId).orElseThrow(
-                    () -> new ResourceNotFoundException("Customer", "CustomerID", customerId.toString())
+                    () -> new ResourceNotFoundException(AccountsConstants.CUSTOMER_MESSAGE, "CustomerID", customerId.toString())
             );
             CustomerMapper.mapToCustomer(customerDto,customer);
             customerRepository.save(customer);
@@ -116,7 +117,7 @@ public class AccountsServiceImpl implements IAccountsService {
     @Override
     public boolean deleteAccount(String mobileNumber) {
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
-                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+                () -> new ResourceNotFoundException(AccountsConstants.CUSTOMER_MESSAGE, AccountsConstants.MOBILE_MESSAGE, mobileNumber)
         );
         accountsRepository.deleteByCustomerId(customer.getCustomerId());
         customerRepository.deleteById(customer.getCustomerId());
